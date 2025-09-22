@@ -24,6 +24,7 @@ const Unit: React.FC<UnitProps> = ({ unit }) => {
   
   const imageUrl = unit.status === 'attacking' ? unit.stats.attackImage : unit.stats.walkImage;
   const flashClass = isFlashing ? 'animate-flash' : '';
+  const animationClass = unit.status === 'attacking' ? 'animate-unit-attack' : 'animate-unit-walk';
 
   return (
     <div
@@ -35,10 +36,10 @@ const Unit: React.FC<UnitProps> = ({ unit }) => {
         transform: `translateX(-50%) ${unit.affiliation === Affiliation.AI ? 'scaleX(-1)' : ''}`,
       }}
     >
-      <img 
-        src={imageUrl} 
-        alt={unit.stats.name} 
-        className={`w-full h-full object-contain ${flashClass}`} 
+      <img
+        src={imageUrl}
+        alt={unit.stats.name}
+        className={`w-full h-full object-contain ${animationClass} ${flashClass}`}
       />
       <div className="absolute -top-2 w-full h-1.5 bg-gray-600 rounded">
         <div

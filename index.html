@@ -17,6 +17,22 @@
       .animate-flash {
         animation: flash 0.2s ease-in-out;
       }
+      @keyframes unit-walk {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-6px); }
+      }
+      @keyframes unit-attack {
+        0% { transform: translateY(0) scale(1); }
+        35% { transform: translateY(-8px) scale(1.08); }
+        55% { transform: translateY(3px) scale(0.96); }
+        100% { transform: translateY(0) scale(1); }
+      }
+      .animate-unit-walk {
+        animation: unit-walk 0.6s ease-in-out infinite;
+      }
+      .animate-unit-attack {
+        animation: unit-attack 0.45s ease-in-out infinite;
+      }
     </style>
 <script type="importmap">
 {
