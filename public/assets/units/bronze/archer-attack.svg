@@ -1,0 +1,18 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <rect fill="transparent" width="128" height="128"/>
+  <g transform="translate(16,12)">
+    <circle cx="46" cy="18" r="12" fill="#f2c49a" stroke="#5b3012" stroke-width="3"/>
+    <rect x="38" y="30" width="16" height="30" rx="8" fill="#59713c"/>
+    <rect x="32" y="58" width="10" height="26" rx="5" fill="#59713c" transform="rotate(-25 37 71)"/>
+    <rect x="52" y="56" width="10" height="26" rx="5" fill="#59713c" transform="rotate(18 57 69)"/>
+    <rect x="30" y="24" width="10" height="30" rx="5" fill="#f2c49a" transform="rotate(-70 35 39)"/>
+    <rect x="54" y="34" width="10" height="24" rx="5" fill="#f2c49a" transform="rotate(10 59 46)"/>
+    <path d="M62 24 C86 12 100 20 106 46" stroke="#7b5230" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M62 26 C86 18 98 24 104 46" stroke="#2b2b2b" stroke-width="3" fill="none"/>
+    <line x1="62" y1="26" x2="100" y2="46" stroke="#1f1f1f" stroke-width="2"/>
+    <polygon points="100,46 112,44 102,52" fill="#5c2f17"/>
+    <circle cx="46" cy="18" r="2.5" fill="#2b1c12"/>
+    <circle cx="52" cy="18" r="2.5" fill="#2b1c12"/>
+    <path d="M42 22 Q46 20 50 22" stroke="#4d2a13" stroke-width="2" stroke-linecap="round"/>
+  </g>
+</svg>
