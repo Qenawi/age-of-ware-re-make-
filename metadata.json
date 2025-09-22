@@ -1,0 +1,5 @@
+{
+  "name": "Age of War",
+  "description": "A 2D web-based strategy game inspired by the classic Age of War. Spawn units, evolve through ages, and destroy the enemy base. Built with React, TypeScript, and Tailwind CSS.",
+  "requestFramePermissions": []
+}
