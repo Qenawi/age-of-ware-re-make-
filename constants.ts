@@ -1,4 +1,5 @@
 import type { Age } from './types';
+import { getAssetPath } from './utils';
 
 const ASSET_BASE_URL = "https://raw.githubusercontent.com/apiotrowski255/age-of-war/master/img/";
 
@@ -36,8 +37,8 @@ export const AGES: Age[] = [
   {
     name: "Stone Age",
     xpToEvolve: 400,
-    background: `/assets/backgrounds/stone-age-battlefield.png`,
-    baseImage: `/assets/bases/stone-age-base.png`,
+    background: getAssetPath('/assets/backgrounds/stone-age-battlefield.png'),
+    baseImage: getAssetPath('/assets/bases/stone-age-base.png'),
     units: [
       {
         name: "Clubman",
@@ -47,10 +48,10 @@ export const AGES: Age[] = [
         range: 5, // melee
         attackSpeed: 1,
         speed: 30,
-        icon: `/assets/units/stone/clubman-walk.svg`,
+        icon: getAssetPath(`/assets/units/stone/clubman-walk.svg`),
         // walkImage / attackImage kept as fallback; overridden at runtime by frame loader in Unit component
-        walkImage: `/assets/units/stone/clubman-walk.svg`,
-        attackImage: `/assets/units/stone/clubman-attack.svg`,
+        walkImage: getAssetPath(`/assets/units/stone/clubman-walk.svg`),
+        attackImage: getAssetPath(`/assets/units/stone/clubman-attack.svg`),
         width: 70,
         height: 70,
       },
@@ -62,9 +63,9 @@ export const AGES: Age[] = [
         range: 150,
         attackSpeed: 0.8,
         speed: 35,
-        icon: `/assets/units/stone/slingshot-walk.svg`,
-        walkImage: `/assets/units/stone/slingshot-walk.svg`,
-        attackImage: `/assets/units/stone/slingshot-attack.svg`,
+        icon: getAssetPath(`/assets/units/stone/slingshot-walk.svg`),
+        walkImage: getAssetPath(`/assets/units/stone/slingshot-walk.svg`),
+        attackImage: getAssetPath(`/assets/units/stone/slingshot-attack.svg`),
         width: 70,
         height: 70,
       },
@@ -82,7 +83,7 @@ export const AGES: Age[] = [
         range: 250,
         attackSpeed: 1,
         sellValue: 50,
-        image: "/assets/towers/stone-tower.png"
+        image: getAssetPath("/assets/towers/stone-tower.png")
       },
       {
         name: "Catapult",
@@ -91,7 +92,7 @@ export const AGES: Age[] = [
         range: 350,
         attackSpeed: 0.5,
         sellValue: 100,
-        image: "/assets/towers/catapult.png",
+        image: getAssetPath("/assets/towers/catapult.png"),
         upgradeFrom: "Stone Tower"
       }
     ]
@@ -99,8 +100,8 @@ export const AGES: Age[] = [
   {
     name: "Bronze Age",
     xpToEvolve: 1000,
-    background: `/assets/backgrounds/bronze-age-battlefield.png`,
-    baseImage: `/assets/bases/bronze-age-base.png`,
+    background: getAssetPath(`/assets/backgrounds/bronze-age-battlefield.png`),
+    baseImage: getAssetPath(`/assets/bases/bronze-age-base.png`),
     units: [
       {
         name: "Swordsman",
@@ -110,9 +111,9 @@ export const AGES: Age[] = [
         range: 5,
         attackSpeed: 1.2,
         speed: 30,
-        icon: `/assets/units/bronze/swordsman-walk.svg`,
-        walkImage: `/assets/units/bronze/swordsman-walk.svg`,
-        attackImage: `/assets/units/bronze/swordsman-attack.svg`,
+        icon: getAssetPath(`/assets/units/bronze/swordsman-walk.svg`),
+        walkImage: getAssetPath(`/assets/units/bronze/swordsman-walk.svg`),
+        attackImage: getAssetPath(`/assets/units/bronze/swordsman-attack.svg`),
         width: 72,
         height: 72,
       },
@@ -124,9 +125,9 @@ export const AGES: Age[] = [
         range: 200,
         attackSpeed: 1,
         speed: 35,
-        icon: `/assets/units/bronze/archer-walk.svg`,
-        walkImage: `/assets/units/bronze/archer-walk.svg`,
-        attackImage: `/assets/units/bronze/archer-attack.svg`,
+        icon: getAssetPath(`/assets/units/bronze/archer-walk.svg`),
+        walkImage: getAssetPath(`/assets/units/bronze/archer-walk.svg`),
+        attackImage: getAssetPath(`/assets/units/bronze/archer-attack.svg`),
         width: 70,
         height: 70,
       },
@@ -144,7 +145,7 @@ export const AGES: Age[] = [
         range: 450,
         attackSpeed: 0.8,
         sellValue: 150,
-        image: "/assets/towers/ballista.png",
+        image: getAssetPath("/assets/towers/ballista.png"),
         upgradeFrom: "Catapult"
       },
       {
@@ -154,15 +155,15 @@ export const AGES: Age[] = [
         range: 400,
         attackSpeed: 1.5,
         sellValue: 200,
-        image: "/assets/towers/guard-tower.png"
+        image: getAssetPath("/assets/towers/guard-tower.png")
       }
     ]
   },
   {
     name: "Future Age",
     xpToEvolve: Infinity,
-    background: `/assets/backgrounds/future-age-battlefield.png`,
-    baseImage: `/assets/bases/future-age-base.png`,
+    background: getAssetPath(`/assets/backgrounds/future-age-battlefield.png`),
+    baseImage: getAssetPath(`/assets/bases/future-age-base.png`),
     units: [
       {
         name: "Cyborg",
@@ -172,9 +173,9 @@ export const AGES: Age[] = [
         range: 10,
         attackSpeed: 1.5,
         speed: 40,
-        icon: `/assets/units/future/cyborg-walk.svg`,
-        walkImage: `/assets/units/future/cyborg-walk.svg`,
-        attackImage: `/assets/units/future/cyborg-attack.svg`,
+        icon: getAssetPath(`/assets/units/future/cyborg-walk.svg`),
+        walkImage: getAssetPath(`/assets/units/future/cyborg-walk.svg`),
+        attackImage: getAssetPath(`/assets/units/future/cyborg-attack.svg`),
         width: 76,
         height: 76,
       },
@@ -186,9 +187,9 @@ export const AGES: Age[] = [
         range: 250,
         attackSpeed: 1.2,
         speed: 45,
-        icon: `/assets/units/future/laser-walk.svg`,
-        walkImage: `/assets/units/future/laser-walk.svg`,
-        attackImage: `/assets/units/future/laser-attack.svg`,
+        icon: getAssetPath(`/assets/units/future/laser-walk.svg`),
+        walkImage: getAssetPath(`/assets/units/future/laser-walk.svg`),
+        attackImage: getAssetPath(`/assets/units/future/laser-attack.svg`),
         width: 74,
         height: 74,
       },
@@ -206,7 +207,7 @@ export const AGES: Age[] = [
         range: 500,
         attackSpeed: 2,
         sellValue: 400,
-        image: "/assets/towers/laser-turret.png",
+        image: getAssetPath("/assets/towers/laser-turret.png"),
         upgradeFrom: "Ballista"
       },
       {
@@ -216,7 +217,7 @@ export const AGES: Age[] = [
         range: 480,
         attackSpeed: 1,
         sellValue: 500,
-        image: "/assets/towers/plasma-cannon.png",
+        image: getAssetPath("/assets/towers/plasma-cannon.png"),
         upgradeFrom: "Guard Tower"
       }
     ]

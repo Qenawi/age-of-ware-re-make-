@@ -9,6 +9,7 @@ import { GAME_CONFIG, AGES } from './constants';
 import type { GameState } from './types';
 import { GameStatus } from './types';
 import { GameManager, Difficulty } from './GameManager';
+import { getAssetPath } from './utils';
 
 const App: React.FC = () => {
   const gameManagerRef = useRef<GameManager | null>(null);
@@ -84,7 +85,7 @@ const App: React.FC = () => {
       {/* Background music player (triggered on game start, loop, hidden) */}
       <audio
         ref={audioRef}
-        src="/assets/music/main-track.mp3"
+        src={getAssetPath('/assets/music/main-track.mp3')}
         loop
         controls={false}
         style={{ display: 'none' }}
