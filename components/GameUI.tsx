@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Age, Upgrade } from '../types';
+import type { Age, Upgrade, BuildQueueItem } from '../types';
 
 interface GameUIProps {
   playerGold: number;
@@ -10,6 +10,7 @@ interface GameUIProps {
   maxHealth: number;
   canEvolve: boolean;
   purchasedUpgrades: string[];
+  playerBuildQueue: BuildQueueItem[];
   onSpawnUnit: (unitIndex: number) => void;
   onEvolve: () => void;
   onUpgrade: (upgradeIndex: number) => void;
@@ -37,21 +38,87 @@ const GameUI: React.FC<GameUIProps> = ({
   maxHealth,
   canEvolve,
   purchasedUpgrades,
+  playerBuildQueue,
   onSpawnUnit,
   onEvolve,
   onUpgrade,
 }) => {
   return (
     <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-      <div className="p-2 flex justify-between items-center bg-gray-900 bg-opacity-50">
+      {/* Compact Header: Health, Gold, XP, Era Progress */}
+      <div className="px-2 py-1 flex justify-between items-center bg-gray-900 bg-opacity-60 gap-2 rounded-b-lg">
         <HealthBar current={playerHealth} max={maxHealth} isPlayer={true} />
-        <div className="text-center">
-            <div className="text-2xl font-bold text-yellow-400">💰 {Math.floor(playerGold)}</div>
-            <div className="text-2xl font-bold text-blue-400">⭐ {Math.floor(playerXP)} / {currentAge.xpToEvolve}</div>
+        <div className="flex flex-col items-center mx-2">
+          <div className="flex gap-2 items-center">
+            <span className="text-yellow-400 font-bold text-lg">💰 {Math.floor(playerGold)}</span>
+            <span className="text-blue-400 font-bold text-lg">⭐ {Math.floor(playerXP)}</span>
+          </div>
+          {/* Era Progress Indicator */}
+          <div className="flex items-center gap-1 mt-1">
+            <span className="text-purple-400 font-bold text-sm">{currentAge.name}</span>
+            <span className="text-xs text-gray-300">Progress:</span>
+            <div className="w-24 h-2 bg-gray-700 rounded overflow-hidden">
+              <div
+                className="bg-purple-400 h-full transition-all duration-300"
+                style={{ width: `${Math.min(100, (playerXP / currentAge.xpToEvolve) * 100)}%` }}
+              ></div>
+            </div>
+            <span className="text-xs text-gray-400 ml-1">{Math.floor(playerXP)} / {currentAge.xpToEvolve}</span>
+          </div>
         </div>
         <HealthBar current={aiHealth} max={maxHealth} isPlayer={false} />
       </div>
-      
+
+      {/* Era Character Stats Display (compact) */}
+      <div className="absolute top-11 left-2 bg-gray-800 bg-opacity-90 pointer-events-none rounded px-2 py-1 flex gap-2 items-center">
+        <span className="text-xs text-gray-400">Units:</span>
+        {currentAge.units.map((unit) => {
+          // Calculate upgraded stats
+          let displayDamage = unit.damage;
+          let displayHealth = unit.health;
+          let displayRange = unit.range;
+
+          purchasedUpgrades.forEach(upgradeName => {
+            const upgrade = currentAge.upgrades.find(u => u.name === upgradeName && u.unitName === unit.name);
+            if (upgrade) {
+              if (upgrade.stat === 'damage') displayDamage += upgrade.value;
+              if (upgrade.stat === 'health') displayHealth += upgrade.value;
+              if (upgrade.stat === 'range') displayRange += upgrade.value;
+            }
+          });
+
+          return (
+            <div key={unit.name} className="bg-gray-700 rounded px-1.5 py-0.5 flex items-center gap-1">
+              <span className="font-bold text-white text-xs truncate max-w-16">{unit.name}</span>
+              <div className="flex gap-1 text-[10px]">
+                <span className="text-red-400" title="Attack">⚔️{displayDamage}</span>
+                <span className="text-green-400" title="HP">❤️{displayHealth}</span>
+                <span className="text-blue-400" title="Range">🎯{displayRange}</span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Build Queue Display */}
+      {playerBuildQueue.length > 0 && (
+        <div className="absolute bottom-28 left-4 bg-gray-800 bg-opacity-90 rounded p-2 pointer-events-none">
+          <div className="text-xs text-gray-400 mb-1">Build Queue:</div>
+          {playerBuildQueue.map((item, idx) => {
+            const timeInSeconds = Math.ceil(item.timeRemaining / 1000);
+            const isBuilding = idx === 0;
+            return (
+              <div key={idx} className={`flex items-center gap-2 ${!isBuilding ? 'opacity-60' : ''}`}>
+                <div className="text-sm font-bold text-white">{item.unitStats.name}</div>
+                <div className="text-xs text-yellow-400">
+                  {isBuilding ? `⏱️ ${timeInSeconds}s` : `⏳ ${idx}`}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
       <div className="absolute bottom-0 left-0 w-full p-2 bg-gray-800 bg-opacity-70 flex justify-center items-center space-x-2 pointer-events-auto">
         {/* Unit Spawning */}
         {currentAge.units.map((unit, index) => (
