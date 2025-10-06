@@ -3,13 +3,16 @@ import GameUI from './components/GameUI';
 import StartScreen from './components/StartScreen';
 import GameOverScreen from './components/GameOverScreen';
 import Unit from './components/Unit';
+import Base from './components/Base';
+import TowerSlot from './components/TowerSlot';
 import { GAME_CONFIG, AGES } from './constants';
 import type { GameState } from './types';
 import { GameStatus } from './types';
-import { GameManager } from './GameManager';
+import { GameManager, Difficulty } from './GameManager';
 
 const App: React.FC = () => {
   const gameManagerRef = useRef<GameManager | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const [gameState, setGameState] = useState<GameState>(() => {
     const manager = new GameManager();
@@ -23,6 +26,13 @@ const App: React.FC = () => {
       gameManagerRef.current.setOnStateUpdate(setGameState);
     }
   }, []); // Empty dependency array ensures this runs only once on mount.
+
+  // Play audio when game starts (user interaction allows autoplay)
+  useEffect(() => {
+    if (gameState.status === GameStatus.Playing && audioRef.current) {
+      audioRef.current.play().catch(err => console.log('Audio autoplay blocked:', err));
+    }
+  }, [gameState.status]);
 
   const gameLoopRef = useRef<number | null>(null);
   const lastUpdateTimeRef = useRef<number>(performance.now());
@@ -51,11 +61,17 @@ const App: React.FC = () => {
     };
   }, [gameState.status, gameLoop]);
 
-  const handleStart = () => gameManagerRef.current?.start();
+  const handleStart = (difficulty: Difficulty) => {
+    gameManagerRef.current?.setDifficulty(difficulty);
+    gameManagerRef.current?.start();
+  };
   const handleRestart = () => gameManagerRef.current?.restart();
   const handleSpawnUnit = (unitIndex: number) => gameManagerRef.current?.spawnPlayerUnit(unitIndex);
   const handleEvolve = () => gameManagerRef.current?.evolvePlayer();
   const handleUpgrade = (upgradeIndex: number) => gameManagerRef.current?.upgradePlayer(upgradeIndex);
+  const handleBuildTower = (slotId: number, towerIndex: number) => gameManagerRef.current?.buildPlayerTower(slotId, towerIndex);
+  const handleUpgradeTower = (slotId: number, towerIndex: number) => gameManagerRef.current?.upgradePlayerTower(slotId, towerIndex);
+  const handleSellTower = (slotId: number) => gameManagerRef.current?.sellPlayerTower(slotId);
 
   const currentAge = AGES[gameState.playerAge];
   const currentBackground = AGES[gameState.playerAge].background;
@@ -65,6 +81,14 @@ const App: React.FC = () => {
 
   return (
     <div className="flex justify-center items-center h-screen bg-black">
+      {/* Background music player (triggered on game start, loop, hidden) */}
+      <audio
+        ref={audioRef}
+        src="/assets/music/main-track.mp3"
+        loop
+        controls={false}
+        style={{ display: 'none' }}
+      />
       <div
         className="relative overflow-hidden bg-cover bg-center"
         style={{
@@ -87,14 +111,55 @@ const App: React.FC = () => {
               maxHealth={GAME_CONFIG.MAX_HEALTH}
               canEvolve={canEvolve}
               purchasedUpgrades={gameState.playerUpgrades}
+              playerBuildQueue={gameState.playerBuildQueue}
               onSpawnUnit={handleSpawnUnit}
               onEvolve={handleEvolve}
               onUpgrade={handleUpgrade}
             />
 
-            {/* Bases */}
-            <img src={playerBaseImg} alt="Player Base" className="absolute bottom-12 h-48" style={{ left: `${GAME_CONFIG.PLAYER_BASE_X - 100}px`}}/>
-            <img src={aiBaseImg} alt="AI Base" className="absolute bottom-12 h-48 scale-x-[-1]" style={{ left: `${GAME_CONFIG.AI_BASE_X - 60}px`}}/>
+            {/* Bases with Damage Effects */}
+            <Base
+              image={playerBaseImg}
+              health={gameState.playerHealth}
+              maxHealth={GAME_CONFIG.MAX_HEALTH}
+              isPlayer={true}
+              x={GAME_CONFIG.PLAYER_BASE_X - 100}
+              groundOffset={GAME_CONFIG.PLAYFIELD_GROUND_OFFSET - 20}
+            />
+            <Base
+              image={aiBaseImg}
+              health={gameState.aiHealth}
+              maxHealth={GAME_CONFIG.MAX_HEALTH}
+              isPlayer={false}
+              x={GAME_CONFIG.AI_BASE_X - 60}
+              groundOffset={GAME_CONFIG.PLAYFIELD_GROUND_OFFSET - 20}
+            />
+
+            {/* Tower Slots */}
+            {gameState.playerTowers.map(slot => (
+              <TowerSlot
+                key={`player-tower-${slot.id}`}
+                slot={slot}
+                isPlayer={true}
+                availableTowers={currentAge.towers}
+                playerGold={gameState.playerGold}
+                onBuild={handleBuildTower}
+                onUpgrade={handleUpgradeTower}
+                onSell={handleSellTower}
+              />
+            ))}
+            {gameState.aiTowers.map(slot => (
+              <TowerSlot
+                key={`ai-tower-${slot.id}`}
+                slot={slot}
+                isPlayer={false}
+                availableTowers={AGES[gameState.aiAge].towers}
+                playerGold={0}
+                onBuild={() => {}}
+                onUpgrade={() => {}}
+                onSell={() => {}}
+              />
+            ))}
 
             {/* Units */}
             {gameState.units.map(unit => (

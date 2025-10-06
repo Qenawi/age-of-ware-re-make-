@@ -29,10 +29,11 @@ export interface UnitStats {
   attackSpeed: number; // attacks per second
   speed: number; // pixels per second
   icon: string;
-  walkImage: string;
-  attackImage: string;
+  walkImage: string; // Fallback for old animation system
+  attackImage: string; // Fallback for old animation system
   width: number;
   height: number;
+  animationId?: string; // ID for new animation system (e.g., 'cave_melee')
 }
 
 export interface Age {
@@ -42,6 +43,32 @@ export interface Age {
   baseImage: string;
   units: UnitStats[];
   upgrades: Upgrade[];
+  towers: TowerStats[];
+}
+
+export interface BuildQueueItem {
+  unitStats: UnitStats;
+  affiliation: Affiliation;
+  timeRemaining: number; // milliseconds
+}
+
+export interface TowerStats {
+  name: string;
+  cost: number;
+  damage: number;
+  range: number;
+  attackSpeed: number; // attacks per second
+  sellValue: number; // 50% of cost
+  image: string;
+  upgradeFrom?: string; // Name of tower this upgrades from
+  lastAttackTime?: number; // timestamp of last attack
+}
+
+export interface TowerSlot {
+  id: number;
+  tower: TowerStats | null;
+  x: number; // position on battlefield
+  y: number; // position on battlefield
 }
 
 export interface GameState {
@@ -53,12 +80,16 @@ export interface GameState {
   playerXP: number;
   playerAge: number;
   playerUpgrades: string[];
-  
+  playerBuildQueue: BuildQueueItem[];
+  playerTowers: TowerSlot[];
+
   aiHealth: number;
   aiGold: number;
   aiXP: number;
   aiAge: number;
   aiUpgrades: string[];
+  aiBuildQueue: BuildQueueItem[];
+  aiTowers: TowerSlot[];
 
   units: Character[];
 }
