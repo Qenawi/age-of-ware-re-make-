@@ -12,7 +12,8 @@ export abstract class Character {
   x: number;
   attackCooldown: number; // in milliseconds
   target: Character | null = null;
-  status: 'walking' | 'attacking' = 'walking';
+  status: 'walking' | 'attacking' | 'idle' | 'dead' = 'walking';
+  animationId?: string; // ID for new animation system (e.g., 'cave_melee')
 
   constructor(stats: UnitStats, affiliation: Affiliation, x: number) {
     this.id = `unit_${Math.random()}_${Date.now()}`;
@@ -46,28 +47,45 @@ export abstract class Character {
         }
       }
     }
-    
+
     const distanceToBase = Math.abs(enemyBaseX - this.x);
 
+    // Prioritize enemy units if in range
     if (closestTarget && minDistance <= this.stats.range) {
         return { target: closestTarget, distance: minDistance, targetIsBase: false };
     }
 
+    // For base attacks, add extra range for melee units (base is a large target)
+    const baseAttackRange = this.stats.range < 50 ? 60 : this.stats.range; // Melee gets 60px range for base
+
     return { target: closestTarget, distance: distanceToBase, targetIsBase: true };
   }
+
   
   update(deltaTime: number, allUnits: Character[], onDamagePlayerBase: (damage: number) => void, onDamageAIBase: (damage: number) => void): void {
-    if (this.isDead()) return;
+    if (this.isDead()) {
+      this.status = 'dead';
+      return;
+    }
 
     this.attackCooldown = Math.max(0, this.attackCooldown - deltaTime * 1000);
 
     const isPlayer = this.affiliation === AffiliationEnum.Player;
     const enemyBaseX = isPlayer ? GAME_CONFIG.AI_BASE_X : GAME_CONFIG.PLAYER_BASE_X;
 
+    // Define movement boundaries - units can get close enough to attack base
+    // Allow units to approach within their attack range + small buffer
+    const attackBuffer = 10; // Extra pixels to ensure melee can reach
+    const minX = GAME_CONFIG.PLAYER_BASE_X + attackBuffer;
+    const maxX = GAME_CONFIG.AI_BASE_X - attackBuffer;
+
     const { target, distance, targetIsBase } = this.findTarget(allUnits, enemyBaseX);
     this.target = target;
-    
-    if (distance <= this.stats.range) {
+
+    // Determine effective attack range (melee gets extra range for base attacks)
+    const effectiveRange = targetIsBase && this.stats.range < 50 ? 60 : this.stats.range;
+
+    if (distance <= effectiveRange) {
       this.status = 'attacking';
       if (this.attackCooldown <= 0) {
         this.attackCooldown = 1000 / this.stats.attackSpeed;
@@ -82,9 +100,13 @@ export abstract class Character {
         }
       }
     } else {
+      // Move forward (no collision blocking)
       this.status = 'walking';
       const direction = isPlayer ? 1 : -1;
-      this.x += this.stats.speed * deltaTime * direction;
+      const newX = this.x + (this.stats.speed * deltaTime * direction);
+
+      // Clamp position to boundaries - don't enter bases
+      this.x = Math.max(minX, Math.min(maxX, newX));
     }
   }
 }

@@ -22,3 +22,38 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment & local config
+.env
+.env.*
+!.env.example
+
+# OS / metadata
+Thumbs.db
+ehthumbs.db
+.Spotlight-V100
+.Trashes
+
+# IDE specifics
+.history
+*.iml
+
+# Build artifacts / caches
+coverage
+*.tsbuildinfo
+.turbo
+.parcel-cache
+.cache
+tmp
+temp
+
+# Dependency audit / lock backups
+package-lock.backup*.json
+yarn.lock.backup*
+
+# Misc
+*.orig
+*.rej
+*.tgz
+*.zip
+*.DS_Store?

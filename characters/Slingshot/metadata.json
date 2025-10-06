@@ -1,0 +1,123 @@
+{
+  "character": {
+    "id": "eee7cf06-5553-4e22-ba99-078bcd7b21c5",
+    "name": "Slingshot\nMid-range projectile thrower using a primitive sling weapon",
+    "prompt": "Slingshot\nMid-range projectile thrower using a primitive sling weapon",
+    "size": {
+      "width": 64,
+      "height": 64
+    },
+    "template_id": "mannequin",
+    "directions": 8,
+    "view": "low top-down",
+    "created_at": "2025-10-05T23:06:44.116288+00:00"
+  },
+  "frames": {
+    "rotations": {
+      "south": "rotations/south.png",
+      "south-east": "rotations/south-east.png",
+      "east": "rotations/east.png",
+      "north-east": "rotations/north-east.png",
+      "north": "rotations/north.png",
+      "north-west": "rotations/north-west.png",
+      "west": "rotations/west.png",
+      "south-west": "rotations/south-west.png"
+    },
+    "animations": {
+      "breathing-idle": {
+        "east": [
+          "animations/breathing-idle/east/frame_000.png",
+          "animations/breathing-idle/east/frame_001.png",
+          "animations/breathing-idle/east/frame_002.png",
+          "animations/breathing-idle/east/frame_003.png"
+        ]
+      },
+      "walking-6-frames": {
+        "east": [
+          "animations/walking-6-frames/east/frame_000.png",
+          "animations/walking-6-frames/east/frame_001.png",
+          "animations/walking-6-frames/east/frame_002.png",
+          "animations/walking-6-frames/east/frame_003.png",
+          "animations/walking-6-frames/east/frame_004.png",
+          "animations/walking-6-frames/east/frame_005.png"
+        ]
+      },
+      "throw-object": {
+        "east": [
+          "animations/throw-object/east/frame_000.png",
+          "animations/throw-object/east/frame_001.png",
+          "animations/throw-object/east/frame_002.png",
+          "animations/throw-object/east/frame_003.png",
+          "animations/throw-object/east/frame_004.png",
+          "animations/throw-object/east/frame_005.png",
+          "animations/throw-object/east/frame_006.png"
+        ]
+      },
+      "taking-punch": {
+        "east": [
+          "animations/taking-punch/east/frame_000.png",
+          "animations/taking-punch/east/frame_001.png",
+          "animations/taking-punch/east/frame_002.png",
+          "animations/taking-punch/east/frame_003.png",
+          "animations/taking-punch/east/frame_004.png",
+          "animations/taking-punch/east/frame_005.png"
+        ]
+      }
+    }
+  },
+  "keypoints": {
+    "rotations": {
+      "south": null,
+      "south-east": null,
+      "east": null,
+      "north-east": null,
+      "north": null,
+      "north-west": null,
+      "west": null,
+      "south-west": null
+    },
+    "animations": {
+      "breathing-idle": {
+        "east": [
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "walking-6-frames": {
+        "east": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "throw-object": {
+        "east": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "taking-punch": {
+        "east": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      }
+    }
+  },
+  "export_version": "1.0",
+  "export_date": "2025-10-05T23:26:31.420962"
+}
