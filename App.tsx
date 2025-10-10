@@ -14,12 +14,23 @@ import { getAssetPath } from './utils';
 const App: React.FC = () => {
   const gameManagerRef = useRef<GameManager | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight });
 
   const [gameState, setGameState] = useState<GameState>(() => {
     const manager = new GameManager();
     gameManagerRef.current = manager;
     return manager.getState();
   });
+
+  // Handle window resize for responsive gameplay
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Link the GameManager to the React state updater after the initial render.
   useEffect(() => {
@@ -81,23 +92,26 @@ const App: React.FC = () => {
   const canEvolve = gameState.playerAge < AGES.length - 1 && gameState.playerXP >= currentAge.xpToEvolve;
 
   return (
-    <div className="flex justify-center items-center h-screen bg-black">
-      {/* Background music player (triggered on game start, loop, hidden) */}
-      <audio
-        ref={audioRef}
-        src={getAssetPath('/assets/music/main-track.mp3')}
-        loop
-        controls={false}
-        style={{ display: 'none' }}
-      />
-      <div
-        className="relative overflow-hidden bg-cover bg-center"
-        style={{
-          width: `${GAME_CONFIG.GAME_WIDTH}px`,
-          height: `${GAME_CONFIG.GAME_HEIGHT}px`,
-          backgroundImage: `url(${currentBackground})`,
-        }}
-      >
+    <div className="game-scroll-container bg-black">
+      <div className="game-content-wrapper">
+        {/* Background music player (triggered on game start, loop, hidden) */}
+        <audio
+          ref={audioRef}
+          src={getAssetPath('/assets/music/main-track.mp3')}
+          loop
+          controls={false}
+          style={{ display: 'none' }}
+        />
+        <div
+          className="relative overflow-hidden bg-cover bg-center"
+          style={{
+            width: `${GAME_CONFIG.GAME_WIDTH}px`,
+            height: `${GAME_CONFIG.GAME_HEIGHT}px`,
+            minWidth: `${GAME_CONFIG.GAME_WIDTH}px`,
+            minHeight: `${GAME_CONFIG.GAME_HEIGHT}px`,
+            backgroundImage: `url(${currentBackground})`,
+          }}
+        >
         {gameState.status === GameStatus.StartScreen && <StartScreen onStart={handleStart} />}
         {gameState.status === GameStatus.GameOver && <GameOverScreen winner={gameState.winner} onRestart={handleRestart} />}
         
@@ -168,6 +182,7 @@ const App: React.FC = () => {
             ))}
           </>
         )}
+        </div>
       </div>
     </div>
   );
