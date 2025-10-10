@@ -36,6 +36,20 @@ export interface UnitStats {
   animationId?: string; // ID for new animation system (e.g., 'cave_melee')
 }
 
+export interface Ability {
+  name: string;
+  description: string;
+  cost: number; // XP cost
+  cooldown: number; // milliseconds
+  icon: string;
+  type: 'meteor_shower' | 'heal' | 'money_bonus';
+  // Effect parameters
+  damage?: number; // for meteor shower
+  healAmount?: number; // for heal
+  goldAmount?: number; // for money bonus
+  lastUsedTime?: number; // timestamp tracking
+}
+
 export interface Age {
   name: string;
   xpToEvolve: number;
@@ -44,6 +58,7 @@ export interface Age {
   units: UnitStats[];
   upgrades: Upgrade[];
   towers: TowerStats[];
+  abilities: Ability[];
 }
 
 export interface BuildQueueItem {
@@ -82,6 +97,7 @@ export interface GameState {
   playerUpgrades: string[];
   playerBuildQueue: BuildQueueItem[];
   playerTowers: TowerSlot[];
+  playerAbilities: string[]; // Purchased ability names
 
   aiHealth: number;
   aiGold: number;
@@ -90,6 +106,7 @@ export interface GameState {
   aiUpgrades: string[];
   aiBuildQueue: BuildQueueItem[];
   aiTowers: TowerSlot[];
+  aiAbilities: string[]; // Purchased ability names
 
   units: Character[];
 }

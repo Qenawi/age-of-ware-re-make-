@@ -39,6 +39,35 @@ export const AGES: Age[] = [
     xpToEvolve: 400,
     background: getAssetPath('/assets/backgrounds/stone-age-battlefield.png'),
     baseImage: getAssetPath('/assets/bases/stone-age-base.png'),
+    abilities: [
+      {
+        name: "Meteor Shower",
+        description: "Rain meteors dealing damage to enemy units",
+        cost: 150,
+        cooldown: 30000, // 30 seconds
+        icon: "☄️",
+        type: "meteor_shower",
+        damage: 50
+      },
+      {
+        name: "Heal Base",
+        description: "Restore your base health",
+        cost: 200,
+        cooldown: 45000, // 45 seconds
+        icon: "❤️",
+        type: "heal",
+        healAmount: 150
+      },
+      {
+        name: "Gold Rush",
+        description: "Receive bonus gold",
+        cost: 100,
+        cooldown: 25000, // 25 seconds
+        icon: "💰",
+        type: "money_bonus",
+        goldAmount: 200
+      }
+    ],
     units: [
       {
         name: "Clubman",
@@ -102,6 +131,35 @@ export const AGES: Age[] = [
     xpToEvolve: 1000,
     background: getAssetPath(`/assets/backgrounds/bronze-age-battlefield.png`),
     baseImage: getAssetPath(`/assets/bases/bronze-age-base.png`),
+    abilities: [
+      {
+        name: "Meteor Shower",
+        description: "Rain meteors dealing damage to enemy units",
+        cost: 150,
+        cooldown: 30000,
+        icon: "☄️",
+        type: "meteor_shower",
+        damage: 75
+      },
+      {
+        name: "Heal Base",
+        description: "Restore your base health",
+        cost: 200,
+        cooldown: 45000,
+        icon: "❤️",
+        type: "heal",
+        healAmount: 200
+      },
+      {
+        name: "Gold Rush",
+        description: "Receive bonus gold",
+        cost: 100,
+        cooldown: 25000,
+        icon: "💰",
+        type: "money_bonus",
+        goldAmount: 350
+      }
+    ],
     units: [
       {
         name: "Swordsman",
@@ -164,6 +222,35 @@ export const AGES: Age[] = [
     xpToEvolve: Infinity,
     background: getAssetPath(`/assets/backgrounds/future-age-battlefield.png`),
     baseImage: getAssetPath(`/assets/bases/future-age-base.png`),
+    abilities: [
+      {
+        name: "Meteor Shower",
+        description: "Rain meteors dealing damage to enemy units",
+        cost: 150,
+        cooldown: 30000,
+        icon: "☄️",
+        type: "meteor_shower",
+        damage: 120
+      },
+      {
+        name: "Heal Base",
+        description: "Restore your base health",
+        cost: 200,
+        cooldown: 45000,
+        icon: "❤️",
+        type: "heal",
+        healAmount: 300
+      },
+      {
+        name: "Gold Rush",
+        description: "Receive bonus gold",
+        cost: 100,
+        cooldown: 25000,
+        icon: "💰",
+        type: "money_bonus",
+        goldAmount: 500
+      }
+    ],
     units: [
       {
         name: "Cyborg",

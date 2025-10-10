@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Age, Upgrade, BuildQueueItem, UnitStats } from '../types';
+import type { Age, Upgrade, BuildQueueItem, UnitStats, Ability } from '../types';
 
 interface GameUIProps {
   playerGold: number;
@@ -10,10 +10,14 @@ interface GameUIProps {
   maxHealth: number;
   canEvolve: boolean;
   purchasedUpgrades: string[];
+  purchasedAbilities: string[];
   playerBuildQueue: BuildQueueItem[];
   onSpawnUnit: (unitIndex: number) => void;
   onEvolve: () => void;
   onUpgrade: (upgradeIndex: number) => void;
+  onPurchaseAbility: (abilityName: string) => void;
+  onUseAbility: (abilityName: string) => void;
+  getAbilityCooldown: (abilityName: string) => number;
 }
 
 const HealthBar: React.FC<{ current: number; max: number; isPlayer: boolean }> = ({ current, max, isPlayer }) => {
@@ -38,11 +42,16 @@ const GameUI: React.FC<GameUIProps> = ({
   maxHealth,
   canEvolve,
   purchasedUpgrades,
+  purchasedAbilities,
   playerBuildQueue,
   onSpawnUnit,
   onEvolve,
   onUpgrade,
+  onPurchaseAbility,
+  onUseAbility,
+  getAbilityCooldown,
 }) => {
+  const [showAbilityMenu, setShowAbilityMenu] = React.useState(false);
   const [windowWidth, setWindowWidth] = React.useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
 
   React.useEffect(() => {
@@ -131,6 +140,77 @@ const GameUI: React.FC<GameUIProps> = ({
           })}
         </div>
       )}
+
+      {/* Compound Menu - Floating Button and Panel */}
+      <div className="absolute right-4 bottom-32 pointer-events-auto">
+        {showAbilityMenu && (
+          <div className="mb-2 bg-gray-800 bg-opacity-95 rounded-lg p-3 border-2 border-purple-500 shadow-lg">
+            <div className="text-xs text-purple-400 mb-2 font-bold text-center">COMPOUND ABILITIES</div>
+            <div className="flex flex-col gap-2 max-h-64 overflow-y-auto">
+              {currentAge.abilities.map((ability: Ability) => {
+                const isPurchased = purchasedAbilities.includes(ability.name);
+                const cooldown = getAbilityCooldown(ability.name);
+                const isOnCooldown = cooldown > 0;
+                const cooldownSeconds = Math.ceil(cooldown / 1000);
+
+                return (
+                  <div key={ability.name} className="flex gap-2">
+                    {!isPurchased ? (
+                      <button
+                        onClick={() => onPurchaseAbility(ability.name)}
+                        disabled={playerXP < ability.cost}
+                        className="flex-1 p-2 bg-purple-700 rounded border-2 border-purple-500 hover:bg-purple-600 disabled:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-50 transition-colors text-left"
+                        title={ability.description}
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="text-2xl">{ability.icon}</span>
+                          <div className="flex-1">
+                            <div className="font-bold text-xs">{ability.name}</div>
+                            <div className="text-xs text-gray-300">{ability.description}</div>
+                            <div className="text-xs text-blue-400">⭐ {ability.cost} XP</div>
+                          </div>
+                        </div>
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => onUseAbility(ability.name)}
+                        disabled={isOnCooldown}
+                        className="flex-1 p-2 bg-green-700 rounded border-2 border-green-500 hover:bg-green-600 disabled:bg-gray-600 disabled:cursor-not-allowed disabled:opacity-60 transition-colors text-left relative"
+                        title={isOnCooldown ? `Cooldown: ${cooldownSeconds}s` : ability.description}
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="text-2xl">{ability.icon}</span>
+                          <div className="flex-1">
+                            <div className="font-bold text-xs">{ability.name}</div>
+                            {isOnCooldown ? (
+                              <div className="text-xs text-yellow-400">⏱️ {cooldownSeconds}s</div>
+                            ) : (
+                              <div className="text-xs text-green-300">✓ READY</div>
+                            )}
+                          </div>
+                        </div>
+                        {isOnCooldown && (
+                          <div
+                            className="absolute bottom-0 left-0 h-1 bg-yellow-400 rounded transition-all duration-1000"
+                            style={{ width: `${((ability.cooldown - cooldown) / ability.cooldown) * 100}%` }}
+                          />
+                        )}
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+        <button
+          onClick={() => setShowAbilityMenu(!showAbilityMenu)}
+          className="w-14 h-14 bg-purple-700 rounded-full border-4 border-purple-500 hover:bg-purple-600 transition-colors flex items-center justify-center text-2xl shadow-lg"
+          title="Compound Abilities"
+        >
+          ⚡
+        </button>
+      </div>
 
       <div className={`absolute bottom-0 left-0 w-full p-2 bg-gray-800 bg-opacity-70 pointer-events-auto`}>
         {/* Mobile & Tablet: Stack sections vertically */}

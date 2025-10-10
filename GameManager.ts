@@ -1,4 +1,4 @@
-import { GameState, GameStatus, Affiliation, UnitStats, Upgrade, BuildQueueItem, TowerSlot, TowerStats } from './types';
+import { GameState, GameStatus, Affiliation, UnitStats, Upgrade, BuildQueueItem, TowerSlot, TowerStats, Ability } from './types';
 import { GAME_CONFIG, AGES } from './constants';
 import { BotMind, Difficulty } from './BotMind';
 import type { Character } from './characters/Character';
@@ -11,6 +11,7 @@ export class GameManager {
     private onStateUpdate: ((state: GameState) => void) | null = null;
     private botMind: BotMind;
     private allUpgrades: Map<string, Upgrade>;
+    private allAbilities: Map<string, Ability>;
     private difficulty: Difficulty;
 
     constructor(difficulty: Difficulty = Difficulty.Hard) {
@@ -18,6 +19,7 @@ export class GameManager {
         this.state = this.getInitialState();
         this.botMind = new BotMind(this, difficulty);
         this.allUpgrades = new Map(AGES.flatMap(age => age.upgrades).map(up => [up.name, up]));
+        this.allAbilities = new Map(AGES.flatMap(age => age.abilities).map(ab => [ab.name, { ...ab }]));
     }
 
     public setOnStateUpdate(onStateUpdate: (state: GameState) => void): void {
@@ -44,8 +46,8 @@ export class GameManager {
             { id: 1, tower: null, x: GAME_CONFIG.AI_BASE_X - 40, y: 350 },
         ];
 
-        // Hard mode gives AI resource advantages
-        const aiGoldMultiplier = this.difficulty === Difficulty.Hard ? 2.8 : 1;
+        // Fairer starting resources - AI gets small advantage that grows over time
+        const aiGoldMultiplier = this.difficulty === Difficulty.Hard ? 1.3 : 1;
 
         return {
             status: GameStatus.StartScreen,
@@ -57,6 +59,7 @@ export class GameManager {
             playerUpgrades: [],
             playerBuildQueue: [],
             playerTowers,
+            playerAbilities: [],
             aiHealth: GAME_CONFIG.MAX_HEALTH,
             aiGold: GAME_CONFIG.STARTING_GOLD * aiGoldMultiplier,
             aiXP: GAME_CONFIG.STARTING_XP,
@@ -64,6 +67,7 @@ export class GameManager {
             aiUpgrades: [],
             aiBuildQueue: [],
             aiTowers,
+            aiAbilities: [],
             units: [],
         };
     }
@@ -85,9 +89,18 @@ export class GameManager {
     public update(deltaTime: number, now: number): void {
         if (this.state.status !== GameStatus.Playing) return;
 
-        // Update resources (with difficulty multipliers for AI)
-        const aiGoldMultiplier = this.difficulty === Difficulty.Hard ? 3 : 1;
-        const aiXPMultiplier = this.difficulty === Difficulty.Hard ? 2 : 1;
+        // Update resources (with dynamic multipliers that grow over time)
+        const gameTimeSeconds = (now - (this.botMind as any).gameStartTime) / 1000;
+        const timeProgress = Math.min(gameTimeSeconds / 180, 1); // 0 to 1 over 3 minutes
+
+        // Resource multipliers that scale with time
+        const aiGoldMultiplier = this.difficulty === Difficulty.Hard
+            ? 1.2 + (timeProgress * 1.0)  // Grows from 1.2x to 2.2x
+            : 1.0 + (timeProgress * 0.3); // Grows from 1x to 1.3x
+
+        const aiXPMultiplier = this.difficulty === Difficulty.Hard
+            ? 1.2 + (timeProgress * 0.6)  // Grows from 1.2x to 1.8x
+            : 1.0 + (timeProgress * 0.2); // Grows from 1x to 1.2x
 
         this.state.playerGold += GAME_CONFIG.GOLD_PER_TICK * deltaTime;
         this.state.playerXP += GAME_CONFIG.XP_PER_TICK * deltaTime;
@@ -387,6 +400,124 @@ export class GameManager {
                 slot.tower = { ...newTower };
             }
         }
+    }
+
+    // Ability Methods
+    public purchaseAbility(abilityName: string, affiliation: Affiliation = Affiliation.Player): void {
+        const ability = this.allAbilities.get(abilityName);
+        if (!ability) return;
+
+        const purchasedAbilities = affiliation === Affiliation.Player ? this.state.playerAbilities : this.state.aiAbilities;
+        const xp = affiliation === Affiliation.Player ? this.state.playerXP : this.state.aiXP;
+
+        if (xp >= ability.cost && !purchasedAbilities.includes(abilityName)) {
+            if (affiliation === Affiliation.Player) {
+                this.state.playerXP -= ability.cost;
+                this.state.playerAbilities.push(abilityName);
+            } else {
+                this.state.aiXP -= ability.cost;
+                this.state.aiAbilities.push(abilityName);
+            }
+            this.notify();
+        }
+    }
+
+    public useAbility(abilityName: string, affiliation: Affiliation = Affiliation.Player): boolean {
+        const ability = this.allAbilities.get(abilityName);
+        if (!ability) return false;
+
+        const purchasedAbilities = affiliation === Affiliation.Player ? this.state.playerAbilities : this.state.aiAbilities;
+
+        // Check if ability is purchased
+        if (!purchasedAbilities.includes(abilityName)) return false;
+
+        // Check cooldown
+        const now = performance.now();
+        if (ability.lastUsedTime && (now - ability.lastUsedTime) < ability.cooldown) {
+            return false;
+        }
+
+        // Execute ability effect
+        let success = false;
+        switch (ability.type) {
+            case 'meteor_shower':
+                success = this.executeMeteorShower(ability, affiliation);
+                break;
+            case 'heal':
+                success = this.executeHeal(ability, affiliation);
+                break;
+            case 'money_bonus':
+                success = this.executeMoneyBonus(ability, affiliation);
+                break;
+        }
+
+        if (success) {
+            ability.lastUsedTime = now;
+            this.notify();
+        }
+
+        return success;
+    }
+
+    private executeMeteorShower(ability: Ability, affiliation: Affiliation): boolean {
+        const damage = ability.damage || 0;
+        const targetAffiliation = affiliation === Affiliation.Player ? Affiliation.AI : Affiliation.Player;
+
+        // Damage all enemy units
+        let hitCount = 0;
+        this.state.units.forEach(unit => {
+            if (unit.affiliation === targetAffiliation && !unit.isDead()) {
+                unit.takeDamage(damage);
+                hitCount++;
+            }
+        });
+
+        return hitCount > 0 || this.state.units.length === 0; // Success if hit units or no units to hit
+    }
+
+    private executeHeal(ability: Ability, affiliation: Affiliation): boolean {
+        const healAmount = ability.healAmount || 0;
+
+        if (affiliation === Affiliation.Player) {
+            const maxHeal = GAME_CONFIG.MAX_HEALTH - this.state.playerHealth;
+            const actualHeal = Math.min(healAmount, maxHeal);
+            if (actualHeal > 0) {
+                this.state.playerHealth += actualHeal;
+                return true;
+            }
+        } else {
+            const maxHeal = GAME_CONFIG.MAX_HEALTH - this.state.aiHealth;
+            const actualHeal = Math.min(healAmount, maxHeal);
+            if (actualHeal > 0) {
+                this.state.aiHealth += actualHeal;
+                return true;
+            }
+        }
+
+        return false; // Already at max health
+    }
+
+    private executeMoneyBonus(ability: Ability, affiliation: Affiliation): boolean {
+        const goldAmount = ability.goldAmount || 0;
+
+        if (affiliation === Affiliation.Player) {
+            this.state.playerGold += goldAmount;
+        } else {
+            this.state.aiGold += goldAmount;
+        }
+
+        return true;
+    }
+
+    public getAbilityCooldown(abilityName: string): number {
+        const ability = this.allAbilities.get(abilityName);
+        if (!ability || !ability.lastUsedTime) return 0;
+
+        const now = performance.now();
+        const timeSinceUse = now - ability.lastUsedTime;
+        const remaining = Math.max(0, ability.cooldown - timeSinceUse);
+
+        return remaining;
     }
 
     private notify(): void {

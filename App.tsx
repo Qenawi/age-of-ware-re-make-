@@ -73,6 +73,9 @@ const App: React.FC = () => {
   const handleBuildTower = (slotId: number, towerIndex: number) => gameManagerRef.current?.buildPlayerTower(slotId, towerIndex);
   const handleUpgradeTower = (slotId: number, towerIndex: number) => gameManagerRef.current?.upgradePlayerTower(slotId, towerIndex);
   const handleSellTower = (slotId: number) => gameManagerRef.current?.sellPlayerTower(slotId);
+  const handlePurchaseAbility = (abilityName: string) => gameManagerRef.current?.purchaseAbility(abilityName);
+  const handleUseAbility = (abilityName: string) => gameManagerRef.current?.useAbility(abilityName);
+  const handleGetAbilityCooldown = (abilityName: string): number => gameManagerRef.current?.getAbilityCooldown(abilityName) || 0;
 
   const currentAge = AGES[gameState.playerAge];
   const currentBackground = AGES[gameState.playerAge].background;
@@ -115,10 +118,14 @@ const App: React.FC = () => {
               maxHealth={GAME_CONFIG.MAX_HEALTH}
               canEvolve={canEvolve}
               purchasedUpgrades={gameState.playerUpgrades}
+              purchasedAbilities={gameState.playerAbilities}
               playerBuildQueue={gameState.playerBuildQueue}
               onSpawnUnit={handleSpawnUnit}
               onEvolve={handleEvolve}
               onUpgrade={handleUpgrade}
+              onPurchaseAbility={handlePurchaseAbility}
+              onUseAbility={handleUseAbility}
+              getAbilityCooldown={handleGetAbilityCooldown}
             />
 
             {/* Bases with Damage Effects */}
