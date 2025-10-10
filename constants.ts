@@ -3,40 +3,16 @@ import { getAssetPath } from './utils';
 
 const ASSET_BASE_URL = "https://raw.githubusercontent.com/apiotrowski255/age-of-war/master/img/";
 
-// Get responsive game dimensions based on viewport
-const getGameDimensions = () => {
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-  const isTablet = typeof window !== 'undefined' && window.innerWidth >= 768 && window.innerWidth < 1024;
-
-  if (isMobile) {
-    return {
-      width: Math.min(window.innerWidth, 800),
-      height: Math.min(window.innerHeight, 400)
-    };
-  } else if (isTablet) {
-    return {
-      width: Math.min(window.innerWidth, 1000),
-      height: Math.min(window.innerHeight, 500)
-    };
-  }
-  return {
-    width: 1200,
-    height: 600
-  };
-};
-
-const dimensions = typeof window !== 'undefined' ? getGameDimensions() : { width: 1200, height: 600 };
-
 export const GAME_CONFIG = {
-  GAME_WIDTH: dimensions.width,
-  GAME_HEIGHT: dimensions.height,
+  GAME_WIDTH: 1200,
+  GAME_HEIGHT: 600,
   MAX_HEALTH: 1000,
   STARTING_GOLD: 250,
   STARTING_XP: 0,
   GOLD_PER_TICK: 1.5,
   XP_PER_TICK: 0.5,
   PLAYER_BASE_X: 60,
-  AI_BASE_X: dimensions.width - 120,
+  AI_BASE_X: 1080,
   UNIT_SPAWN_OFFSET: 60,
   // Minimum distance from base edge for unit spawn (prevents instant attack)
   UNIT_SPAWN_SAFE_OFFSET: 160,

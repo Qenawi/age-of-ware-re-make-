@@ -14,23 +14,12 @@ import { getAssetPath } from './utils';
 const App: React.FC = () => {
   const gameManagerRef = useRef<GameManager | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight });
 
   const [gameState, setGameState] = useState<GameState>(() => {
     const manager = new GameManager();
     gameManagerRef.current = manager;
     return manager.getState();
   });
-
-  // Handle window resize for responsive gameplay
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowSize({ width: window.innerWidth, height: window.innerHeight });
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   // Link the GameManager to the React state updater after the initial render.
   useEffect(() => {

@@ -56,70 +56,58 @@
       }
       /* Responsive scrolling container */
       .game-scroll-container {
-        width: 100%;
-        height: 100%;
+        width: 100vw;
+        height: 100vh;
         overflow: auto;
         -webkit-overflow-scrolling: touch;
         position: relative;
-      }
-      .game-content-wrapper {
-        min-width: fit-content;
-        min-height: fit-content;
         display: flex;
         justify-content: center;
         align-items: center;
-        padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
       }
 
-      /* Mobile-specific adjustments */
-      @media (max-width: 767px) {
-        .game-scroll-container {
-          overflow-x: auto;
-          overflow-y: auto;
-        }
+      .game-content-wrapper {
+        position: relative;
+        display: inline-block;
+        min-width: 1200px;
+        min-height: 600px;
+      }
 
-        .game-content-wrapper {
+      /* Mobile & Tablet - enable scrolling */
+      @media (max-width: 1199px) {
+        .game-scroll-container {
           justify-content: flex-start;
           align-items: flex-start;
+          overflow-x: scroll;
+          overflow-y: scroll;
         }
 
-        /* Ensure scrollbars are visible on mobile */
+        /* Visible scrollbars on mobile for better UX */
         .game-scroll-container::-webkit-scrollbar {
-          width: 8px;
-          height: 8px;
+          width: 10px;
+          height: 10px;
         }
 
         .game-scroll-container::-webkit-scrollbar-track {
-          background: rgba(0, 0, 0, 0.3);
+          background: rgba(0, 0, 0, 0.4);
         }
 
         .game-scroll-container::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.3);
-          border-radius: 4px;
+          background: rgba(255, 255, 255, 0.4);
+          border-radius: 5px;
         }
 
         .game-scroll-container::-webkit-scrollbar-thumb:hover {
-          background: rgba(255, 255, 255, 0.5);
+          background: rgba(255, 255, 255, 0.6);
         }
       }
 
-      /* Tablet adjustments */
-      @media (min-width: 768px) and (max-width: 1023px) {
-        .game-content-wrapper {
-          align-items: center;
-          justify-content: center;
-        }
-      }
-
-      /* Desktop - center content */
-      @media (min-width: 1024px) {
+      /* Desktop - center and no scroll */
+      @media (min-width: 1200px) {
         .game-scroll-container {
           overflow: hidden;
-        }
-
-        .game-content-wrapper {
-          align-items: center;
           justify-content: center;
+          align-items: center;
         }
       }
 
